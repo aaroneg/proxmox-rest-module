@@ -21,9 +21,8 @@ function Get-PXVMs {
 					Name = $netDevice.Name
 					MAC  = $netDevice.MAC
 					IPv4 = (($NetworkDevicesAgent | Where-Object {$_.'hardware-address' -eq $netDevice.MAC}).'ip-addresses'|Where-Object {$_.'ip-address-type' -eq 'ipv4'}).'ip-address'
-					IPv6 = (($NetworkDevicesAgent | Where-Object {$_.'hardware-address' -eq $netDevice.MAC}).'ip-addresses'|Where-Object {$_.'ip-address-type' -eq 'ipv6' -and $_.'ip-address' -notlike 'fe80*'}).'ip-address'
+					IPv6 = (($NetworkDevicesAgent | Where-Object {$_.'hardware-address' -eq $netDevice.MAC}).'ip-addresses'|Where-Object {$_.'ip-address-type' -eq 'ipv6' -and $_.'ip-address' -notlike 'fe80*'}).'ip-address' -join ','
 				}
-#				$NicEntry
 				$NICInfo.Add($NicEntry)|Out-Null
 			}
 		}
