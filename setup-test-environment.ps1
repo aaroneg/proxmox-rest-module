@@ -3,11 +3,11 @@ if(!(Get-Module Microsoft.PowerShell.SecretManagement -ListAvailable)) {
     Install-Module Microsoft.PowerShell.SecretManagement, Microsoft.PowerShell.SecretStore -Force -Scope CurrentUser
     Register-SecretVault -Name SecretStore -ModuleName Microsoft.PowerShell.SecretStore -DefaultVault -AllowClobber
 }
-#if(!(Get-Module proxmox-rest-module -ListAvailable)) {
-#    Install-Module proxmox-rest-module, Microsoft.PowerShell.SecretStore -Force -Scope CurrentUser
-#}
+if(!(Get-Module proxmox-rest-module -ListAvailable)) {
+    Install-Module proxmox-rest-module, Microsoft.PowerShell.SecretStore -Force -Scope CurrentUser
+}
 Import-Module Microsoft.PowerShell.SecretManagement, Microsoft.PowerShell.SecretStore
-# Read or create a netbox config object
+# Read or create a proxmox config object
 try {
     $config=Import-Clixml $PSScriptRoot\pxconfig.xml
 }
