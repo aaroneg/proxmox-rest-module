@@ -3,8 +3,8 @@ function parseNICConfigLXC ($Definition) {
 	Write-Verbose ("[$($MyInvocation.MyCommand.Name)] " + ($Definition|Out-String))
 	$NameHunt=$Definition | Select-String -Pattern 'name=([\w\d]+),'
 	$MACHunt=$Definition | Select-String -Pattern 'hwaddr=([0-9,A-F]{2}:[0-9,A-F]{2}:[0-9,A-F]{2}:[0-9,A-F]{2}:[0-9,A-F]{2}:[0-9,A-F]{2})'
-	$IPv4Hunt=$Definition | Select-String -Pattern 'ip=((?:[0-9]{1,3}\.){3}[0-9]{1,3})'
-	$IPv6Hunt= $Definition | Select-String -Pattern 'ip6=((?:[A-F0-9]{1,4}:){7}[A-F0-9]{1,4})'
+	$IPv4Hunt=$Definition | Select-String -Pattern 'ip=((?:[0-9]{1,3}\.){3}[0-9]{1,3}\/[\d]{1,2})'
+	$IPv6Hunt= $Definition | Select-String -Pattern 'ip6=((?:[A-F0-9]{1,4}:){7}[A-F0-9]{1,4}\/[\d]{1,3})'
 	$Name= $NameHunt.Matches.Groups[1].Value
 	$MAC = $MACHunt.Matches.Groups[1].Value
 	if ($null -ne $IPv4Hunt) {$IPv4 = $IPv4Hunt.Matches.Groups[1].Value}
