@@ -1,6 +1,7 @@
 function Get-PXVMs {
 	[CmdletBinding()]
 	param (
+		[Parameter(Mandatory=$false)][switch]$IncludeAllIPs,
 		[Parameter(Mandatory=$false)][object]$Connection=$Script:PXConnection
 	)
 	$restParams=@{
@@ -17,11 +18,16 @@ function Get-PXVMs {
 		try {
 			$NetworkDevicesAgent= Get-PXQEMUVMGuestNetInfo -NodeName $item.Node -ID $item.VMID -erroraction stop
 			Foreach($netDevice in $NetworkDevicesConfig) {
+				$IPv4Entries=(($NetworkDevicesAgent | Where-Object {$_.'hardware-address' -eq $netDevice.MAC}).'ip-addresses'|Where-Object {$_.'ip-address-type' -eq 'ipv4'})
+				$IPv4String=($IPv4Entries| % {"$($_.'ip-address')/$($_.prefix)"}) -join ','
+				if ($IncludeAllIPs){$IPv6Entries=(($NetworkDevicesAgent | Where-Object {$_.'hardware-address' -eq $netDevice.MAC}).'ip-addresses'|Where-Object {$_.'ip-address-type' -eq 'ipv6'})}
+				else{$IPv6Entries=(($NetworkDevicesAgent | Where-Object {$_.'hardware-address' -eq $netDevice.MAC}).'ip-addresses'|Where-Object {$_.'ip-address-type' -eq 'ipv6' -and $_.'ip-address' -notlike 'fe80*' -and $_.prefix -ne 128})}
+				$IPv6String=($IPv6Entries| % {"$($_.'ip-address')/$($_.prefix)"}) -join ','
 				$NicEntry=[PSCustomObject]@{
 					Name = $netDevice.Name
 					MAC  = $netDevice.MAC
-					IPv4 = (($NetworkDevicesAgent | Where-Object {$_.'hardware-address' -eq $netDevice.MAC}).'ip-addresses'|Where-Object {$_.'ip-address-type' -eq 'ipv4'}).'ip-address'
-					IPv6 = (($NetworkDevicesAgent | Where-Object {$_.'hardware-address' -eq $netDevice.MAC}).'ip-addresses'|Where-Object {$_.'ip-address-type' -eq 'ipv6' -and $_.'ip-address' -notlike 'fe80*'}).'ip-address' -join ','
+					IPv4 = $IPv4String
+					IPv6 = $IPv6String
 				}
 				$NICInfo.Add($NicEntry)|Out-Null
 			}
