@@ -48,7 +48,10 @@ function Get-PXVMs {
 			Name  = (Get-PXQEMUNodeInfo -NodeName $item.Node -ID $item.VMID).name
 			Node = $item.Node
 			CPUCount= $item.maxcpu
+			MemGB = ($item.maxmem/1GB)
+			DiskGB = ($item.maxdisk/1GB)
 			Type = 'QEMU'
+			Status = $item.status
 		}
 		$ReportItem | Add-Member -MemberType NoteProperty -Name NICs -Value $NICInfo
 		$Results.Add($ReportItem)|Out-Null
@@ -72,7 +75,10 @@ function Get-PXVMs {
 			Name  = $item.name
 			Node = $item.Node
 			CPUCount= $item.maxcpu
+			MemGB = ($item.maxmem/1GB)
+			DiskGB = ($item.maxdisk/1GB)
 			Type = 'LXC'
+			Status = $item.status
 		}
 		$ReportItem | Add-Member -MemberType NoteProperty -Name NICs -Value $NICInfo
 		#[array]$ReportNICs=((Get-PXLXCVMConfigInfo -NodeName $item.Node -ID $item.VMID)|Get-member |Where-Object {$_.Name -like 'net*'})
